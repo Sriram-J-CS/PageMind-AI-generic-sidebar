@@ -39,12 +39,26 @@
     }
   ],
   "commands": {
-    "_execute_action": {
+    "toggle_sidebar": {
       "suggested_key": {
-        "default": "Alt+Shift+P",
-        "mac": "Alt+Shift+P"
+        "default": "Alt+P",
+        "mac": "Alt+P"
       },
-      "description": "Open PageMind Settings Popup"
+      "description": "Toggle 3D PageMind Sidebar"
+    },
+    "trigger_vision": {
+      "suggested_key": {
+        "default": "Alt+V",
+        "mac": "Alt+V"
+      },
+      "description": "Launch 3D Vision Annotator Mode"
+    },
+    "trigger_agent": {
+      "suggested_key": {
+        "default": "Alt+A",
+        "mac": "Alt+A"
+      },
+      "description": "Launch Agent Laser Cursor Mode"
     }
   }
 }

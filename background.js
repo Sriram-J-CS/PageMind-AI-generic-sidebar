@@ -16,19 +16,19 @@ chrome.runtime.onInstalled.addListener(() => {
     chrome.contextMenus.removeAll(() => {
       chrome.contextMenus.create({
         id: 'pagemind_toggle',
-        title: '🔮 Toggle PageMind 3D Sidebar',
+        title: '🔮 Toggle PageMind 3D Sidebar (Alt+P)',
         contexts: ['page', 'selection']
       }, () => { if (chrome.runtime.lastError) {} });
 
       chrome.contextMenus.create({
         id: 'pagemind_vision',
-        title: '🎯 Annotate with PageMind Vision',
+        title: '🎯 Annotate with PageMind Vision (Alt+V)',
         contexts: ['page', 'selection']
       }, () => { if (chrome.runtime.lastError) {} });
 
       chrome.contextMenus.create({
         id: 'pagemind_agent',
-        title: '🤖 Control with PageMind Agent',
+        title: '🤖 Control with PageMind Agent (Alt+A)',
         contexts: ['page', 'selection']
       }, () => { if (chrome.runtime.lastError) {} });
 
@@ -62,6 +62,22 @@ async function safeSendMessage(tabId, message) {
   } catch (e) {}
 }
 
+// Handle Chrome Native Keyboard Commands (Alt+P, Alt+V, Alt+A)
+if (chrome.commands && chrome.commands.onCommand) {
+  chrome.commands.onCommand.addListener(async (command) => {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (!tab || !tab.id) return;
+
+    if (command === 'toggle_sidebar') {
+      safeSendMessage(tab.id, { action: 'toggle_sidebar' });
+    } else if (command === 'trigger_vision') {
+      safeSendMessage(tab.id, { action: 'trigger_mode', mode: 'vision' });
+    } else if (command === 'trigger_agent') {
+      safeSendMessage(tab.id, { action: 'trigger_mode', mode: 'agent' });
+    }
+  });
+}
+
 // Handle Context Menu Clicks
 if (chrome.contextMenus && chrome.contextMenus.onClicked) {
   chrome.contextMenus.onClicked.addListener((info, tab) => {
@@ -79,7 +95,7 @@ if (chrome.contextMenus && chrome.contextMenus.onClicked) {
   });
 }
 
-// Handle Action Icon Click if popup is not active
+// Handle Action Icon Click
 if (chrome.action && chrome.action.onClicked) {
   chrome.action.onClicked.addListener((tab) => {
     if (tab && tab.id) {

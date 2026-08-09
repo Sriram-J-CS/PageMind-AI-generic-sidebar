@@ -12,6 +12,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const integrationsContent = document.getElementById('integrationsContent');
   const statusEl = document.getElementById('status');
 
+  // Interactive Pills & Shortcut Buttons
+  const launchVisionBtn = document.getElementById('launchVisionBtn');
+  const launchAgentBtn = document.getElementById('launchAgentBtn');
+  const launchMcpBtn = document.getElementById('launchMcpBtn');
+  const rowShortcutToggle = document.getElementById('rowShortcutToggle');
+  const rowShortcutVision = document.getElementById('rowShortcutVision');
+  const rowShortcutAgent = document.getElementById('rowShortcutAgent');
+
   // Toggle Advanced Integrations Accordion
   toggleIntegrationsBtn.addEventListener('click', () => {
     integrationsContent.classList.toggle('show');
@@ -44,12 +52,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const slackWebhook = slackWebhookEl.value.trim();
 
     chrome.storage.sync.set({ apiKey, notionToken, notionDbId, githubToken, slackWebhook }, async () => {
-      showStatus('✅ Saved successfully! Activating PageMind...', 'success');
-      await triggerSidebarOnActiveTab();
+      showStatus('✅ Saved! Activating PageMind...', 'success');
+      await triggerSidebarModeOnActiveTab('chat');
     });
   });
 
-  // Test OpenAI API Key (or confirm Zero-Setup mode)
+  // Test OpenAI API Key
   testApiKeyBtn.addEventListener('click', async () => {
     const apiKey = apiKeyEl.value.trim();
     if (!apiKey) {
@@ -79,13 +87,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Open Sidebar Button Click
-  openSidebarBtn.addEventListener('click', async () => {
-    await triggerSidebarOnActiveTab();
-  });
+  // Click Handlers for Feature Pills & Shortcuts
+  openSidebarBtn.addEventListener('click', () => triggerSidebarModeOnActiveTab('chat'));
+  launchVisionBtn.addEventListener('click', () => triggerSidebarModeOnActiveTab('vision'));
+  launchAgentBtn.addEventListener('click', () => triggerSidebarModeOnActiveTab('agent'));
+  launchMcpBtn.addEventListener('click', () => triggerSidebarModeOnActiveTab('mcp'));
 
-  // Helper function to safely inject scripts and toggle sidebar on active tab
-  async function triggerSidebarOnActiveTab() {
+  rowShortcutToggle.addEventListener('click', () => triggerSidebarModeOnActiveTab('chat'));
+  rowShortcutVision.addEventListener('click', () => triggerSidebarModeOnActiveTab('vision'));
+  rowShortcutAgent.addEventListener('click', () => triggerSidebarModeOnActiveTab('agent'));
+
+  // Core Helper: Reliably injects and triggers mode on active browser tab
+  async function triggerSidebarModeOnActiveTab(mode) {
     try {
       const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
       if (!tab || !tab.id) {
@@ -93,29 +106,29 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      // Check if URL is restrictable by Chrome (chrome:// or edge://)
       if (tab.url && (tab.url.startsWith('chrome://') || tab.url.startsWith('edge://') || tab.url.startsWith('chrome-extension://') || tab.url.startsWith('about:'))) {
         showStatus('⚠️ Cannot run on browser internal system pages. Open a normal website!', 'error');
         return;
       }
 
-      // Inject content.js and styles.css programmatically if not already loaded
+      // Dynamically insert CSS & Script if not present
       try {
         await chrome.scripting.insertCSS({ target: { tabId: tab.id }, files: ['styles.css'] });
         await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ['content.js'] });
-      } catch (e) {
-        // Already injected or standard injection
-      }
+      } catch (e) {}
 
-      // Send message to toggle sidebar
-      chrome.tabs.sendMessage(tab.id, { action: 'toggle_sidebar' }, (res) => {
+      // Send trigger message
+      const actionPayload = mode === 'chat' 
+        ? { action: 'toggle_sidebar' } 
+        : { action: 'trigger_mode', mode: mode };
+
+      chrome.tabs.sendMessage(tab.id, actionPayload, (res) => {
         if (chrome.runtime.lastError) {
-          // Retry sending message after brief pause
           setTimeout(() => {
-            chrome.tabs.sendMessage(tab.id, { action: 'toggle_sidebar' }, () => {
+            chrome.tabs.sendMessage(tab.id, actionPayload, () => {
               window.close();
             });
-          }, 200);
+          }, 150);
         } else {
           window.close();
         }
