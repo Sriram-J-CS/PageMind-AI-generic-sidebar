@@ -21,81 +21,87 @@ document.addEventListener('DOMContentLoaded', () => {
   const rowShortcutAgent = document.getElementById('rowShortcutAgent');
 
   // Toggle Advanced Integrations Accordion
-  toggleIntegrationsBtn.addEventListener('click', () => {
-    integrationsContent.classList.toggle('show');
-    const isShowing = integrationsContent.classList.contains('show');
-    toggleIntegrationsBtn.textContent = isShowing 
-      ? '⚙️ Advanced MCP Integrations (Notion, GitHub, Slack) ▴' 
-      : '⚙️ Advanced MCP Integrations (Notion, GitHub, Slack) ▾';
-  });
+  if (toggleIntegrationsBtn && integrationsContent) {
+    toggleIntegrationsBtn.addEventListener('click', () => {
+      integrationsContent.classList.toggle('show');
+      const isShowing = integrationsContent.classList.contains('show');
+      toggleIntegrationsBtn.textContent = isShowing 
+        ? '⚙️ Advanced MCP Integrations (Notion, GitHub, Slack) ▴' 
+        : '⚙️ Advanced MCP Integrations (Notion, GitHub, Slack) ▾';
+    });
+  }
 
   // Load saved credentials
   chrome.storage.sync.get(['apiKey', 'notionToken', 'notionDbId', 'githubToken', 'slackWebhook'], (data) => {
-    if (data.apiKey) apiKeyEl.value = data.apiKey;
-    if (data.notionToken) notionTokenEl.value = data.notionToken;
-    if (data.notionDbId) notionDbIdEl.value = data.notionDbId;
-    if (data.githubToken) githubTokenEl.value = data.githubToken;
-    if (data.slackWebhook) slackWebhookEl.value = data.slackWebhook;
+    if (data.apiKey && apiKeyEl) apiKeyEl.value = data.apiKey;
+    if (data.notionToken && notionTokenEl) notionTokenEl.value = data.notionToken;
+    if (data.notionDbId && notionDbIdEl) notionDbIdEl.value = data.notionDbId;
+    if (data.githubToken && githubTokenEl) githubTokenEl.value = data.githubToken;
+    if (data.slackWebhook && slackWebhookEl) slackWebhookEl.value = data.slackWebhook;
 
-    if (data.notionToken || data.notionDbId || data.githubToken || data.slackWebhook) {
+    if ((data.notionToken || data.notionDbId || data.githubToken || data.slackWebhook) && integrationsContent && toggleIntegrationsBtn) {
       integrationsContent.classList.add('show');
       toggleIntegrationsBtn.textContent = '⚙️ Advanced MCP Integrations (Notion, GitHub, Slack) ▴';
     }
   });
 
   // Save Credentials & Auto-Activate
-  saveBtn.addEventListener('click', async () => {
-    const apiKey = apiKeyEl.value.trim();
-    const notionToken = notionTokenEl.value.trim();
-    const notionDbId = notionDbIdEl.value.trim();
-    const githubToken = githubTokenEl.value.trim();
-    const slackWebhook = slackWebhookEl.value.trim();
+  if (saveBtn) {
+    saveBtn.addEventListener('click', async () => {
+      const apiKey = apiKeyEl ? apiKeyEl.value.trim() : '';
+      const notionToken = notionTokenEl ? notionTokenEl.value.trim() : '';
+      const notionDbId = notionDbIdEl ? notionDbIdEl.value.trim() : '';
+      const githubToken = githubTokenEl ? githubTokenEl.value.trim() : '';
+      const slackWebhook = slackWebhookEl ? slackWebhookEl.value.trim() : '';
 
-    chrome.storage.sync.set({ apiKey, notionToken, notionDbId, githubToken, slackWebhook }, async () => {
-      showStatus('✅ Saved! Activating PageMind...', 'success');
-      await triggerSidebarModeOnActiveTab('chat');
+      chrome.storage.sync.set({ apiKey, notionToken, notionDbId, githubToken, slackWebhook }, async () => {
+        showStatus('✅ Saved! Activating PageMind...', 'success');
+        await triggerSidebarModeOnActiveTab('chat');
+      });
     });
-  });
+  }
 
   // Test OpenAI API Key
-  testApiKeyBtn.addEventListener('click', async () => {
-    const apiKey = apiKeyEl.value.trim();
-    if (!apiKey) {
-      showStatus('✨ Zero-Setup Active! PageMind works out-of-the-box without an API key.', 'success');
-      return;
-    }
-
-    testApiKeyBtn.textContent = '⏳ Testing Connection...';
-    testApiKeyBtn.disabled = true;
-
-    try {
-      const res = await fetch('https://api.openai.com/v1/models', {
-        headers: { 'Authorization': `Bearer ${apiKey}` }
-      });
-
-      if (res.ok) {
-        showStatus('🎉 OpenAI API key verified successfully!', 'success');
-      } else {
-        const errData = await res.json().catch(() => ({}));
-        showStatus(`❌ API Key Error: ${errData.error?.message || 'Invalid Key'}`, 'error');
+  if (testApiKeyBtn) {
+    testApiKeyBtn.addEventListener('click', async () => {
+      const apiKey = apiKeyEl ? apiKeyEl.value.trim() : '';
+      if (!apiKey) {
+        showStatus('✨ Zero-Setup Active! PageMind works out-of-the-box without an API key.', 'success');
+        return;
       }
-    } catch (err) {
-      showStatus(`❌ Network error: ${err.message}`, 'error');
-    } finally {
-      testApiKeyBtn.textContent = '🧪 Test OpenAI Connection';
-      testApiKeyBtn.disabled = false;
-    }
-  });
+
+      testApiKeyBtn.textContent = '⏳ Testing Connection...';
+      testApiKeyBtn.disabled = true;
+
+      try {
+        const res = await fetch('https://api.openai.com/v1/models', {
+          headers: { 'Authorization': `Bearer ${apiKey}` }
+        });
+
+        if (res.ok) {
+          showStatus('🎉 OpenAI API key verified successfully!', 'success');
+        } else {
+          const errData = await res.json().catch(() => ({}));
+          showStatus(`❌ API Key Error: ${errData.error?.message || 'Invalid Key'}`, 'error');
+        }
+      } catch (err) {
+        showStatus(`❌ Network error: ${err.message}`, 'error');
+      } finally {
+        testApiKeyBtn.textContent = '🧪 Test OpenAI Connection';
+        testApiKeyBtn.disabled = false;
+      }
+    });
+  }
 
   // Click Handlers for Feature Pills & Shortcuts
-  openSidebarBtn.addEventListener('click', () => triggerSidebarModeOnActiveTab('chat'));
-  launchVisionBtn.addEventListener('click', () => triggerSidebarModeOnActiveTab('vision'));
-  launchAgentBtn.addEventListener('click', () => triggerSidebarModeOnActiveTab('agent'));
-  launchMcpBtn.addEventListener('click', () => triggerSidebarModeOnActiveTab('mcp'));
+  if (openSidebarBtn) openSidebarBtn.addEventListener('click', () => triggerSidebarModeOnActiveTab('chat'));
+  if (launchVisionBtn) launchVisionBtn.addEventListener('click', () => triggerSidebarModeOnActiveTab('vision'));
+  if (launchAgentBtn) launchAgentBtn.addEventListener('click', () => triggerSidebarModeOnActiveTab('agent'));
+  if (launchMcpBtn) launchMcpBtn.addEventListener('click', () => triggerSidebarModeOnActiveTab('mcp'));
 
-  rowShortcutToggle.addEventListener('click', () => triggerSidebarModeOnActiveTab('chat'));
-  rowShortcutVision.addEventListener('click', () => triggerSidebarModeOnActiveTab('vision'));
-  rowShortcutAgent.addEventListener('click', () => triggerSidebarModeOnActiveTab('agent'));
+  if (rowShortcutToggle) rowShortcutToggle.addEventListener('click', () => triggerSidebarModeOnActiveTab('chat'));
+  if (rowShortcutVision) rowShortcutVision.addEventListener('click', () => triggerSidebarModeOnActiveTab('vision'));
+  if (rowShortcutAgent) rowShortcutAgent.addEventListener('click', () => triggerSidebarModeOnActiveTab('agent'));
 
   // Core Helper: Reliably injects and triggers mode on active browser tab
   async function triggerSidebarModeOnActiveTab(mode) {
@@ -123,6 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
         : { action: 'trigger_mode', mode: mode };
 
       chrome.tabs.sendMessage(tab.id, actionPayload, () => {
+        if (chrome.runtime.lastError) {}
         setTimeout(() => window.close(), 100);
       });
     } catch (err) {
@@ -131,11 +138,12 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function showStatus(msg, type) {
+    if (!statusEl) return;
     statusEl.textContent = msg;
     statusEl.className = `status-toast ${type}`;
     statusEl.style.display = 'block';
     setTimeout(() => {
-      statusEl.style.display = 'none';
+      if (statusEl) statusEl.style.display = 'none';
     }, 4000);
   }
 });
