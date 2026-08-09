@@ -6,24 +6,24 @@
 
 ## 📸 Extension Screenshots & Feature Showcase
 
-### 🥇 1. PageMind Vision — Live Webpage 3D Annotations
+### 1. PageMind Vision — Live Webpage 3D Annotations
 Instead of just chatting in a sidebar, PageMind **physically draws on the live webpage**. It renders 3D glowing bounding boxes with tech corner brackets, pin-drops translucent 3D sticky notes, highlights text, and attaches status badges directly over DOM elements.
 
-![PageMind Vision Mode](assets/vision_mode.png)
+![PageMind Vision](assets/vision_mode.png)
 
 ---
 
-### 🥈 2. PageMind Agent — Interactive Form Automation & 3D Ghost Laser Cursor
+### 2. PageMind Agent — Interactive Form Automation & 3D Ghost Laser Cursor
 Give your AI hands. PageMind Agent moves a glowing **3D Laser Orb Ghost Cursor** with 60fps spring motion physics across your screen, scrolls to elements, clicks buttons with ripple effects, and performs character-by-character form field typing with native Web Audio API sound FX.
 
-![PageMind Agent Mode](assets/agent_mode.png)
+![PageMind Agent](assets/agent_mode.png)
 
 ---
 
-### 🥉 3. PageMind MCP Router — Connected Tools Hub (Notion, Calendar, GitHub, Slack)
+### 3. PageMind MCP Router — Connected Tools Hub (Notion, Calendar, GitHub, Slack)
 Execute external service tasks from any webpage using the **Model Context Protocol (MCP)**. PageMind automatically creates Notion database items, generates Google Calendar links & downloadable `.ics` calendar files, logs GitHub issues, and posts rich Slack webhook notifications with interactive tool cards in the chat stream.
 
-![PageMind MCP Mode](assets/mcp_mode.png)
+![PageMind MCP](assets/mcp_mode.png)
 
 ---
 
@@ -58,7 +58,7 @@ Execute external service tasks from any webpage using the **Model Context Protoc
 
 You can activate PageMind on **any webpage** using any of these 4 convenient methods:
 
-1. **Floating 3D Orb Widget:** Click the glowing 🔮 orb anchored at the bottom-right corner of any webpage.
+1. **Floating 3D Orb Widget:** Click the glowing orb anchored at the bottom-right corner of any webpage.
 2. **Keyboard Shortcuts:**
    - <kbd>Alt</kbd> + <kbd>P</kbd> — Toggle 3D PageMind Sidebar
    - <kbd>Alt</kbd> + <kbd>V</kbd> — Launch 3D Vision Annotator
