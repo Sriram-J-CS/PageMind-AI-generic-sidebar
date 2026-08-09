@@ -4,76 +4,67 @@
 
 ---
 
-## 🌟 Why PageMind?
+## 📸 Extension Screenshots & Feature Showcase
 
-Most AI browser sidebars are just ChatGPT wrapped in an iframe. **PageMind is different.** It physically interacts with the DOM, draws 3D annotations over webpage elements, moves an interactive 3D ghost laser cursor to fill out forms, and connects to external tools via the **Model Context Protocol (MCP)**.
+### 🥇 1. PageMind Vision — Live Webpage 3D Annotations
+Instead of just chatting in a sidebar, PageMind **physically draws on the live webpage**. It renders 3D glowing bounding boxes with tech corner brackets, pin-drops translucent 3D sticky notes, highlights text, and attaches status badges directly over DOM elements.
 
----
-
-## 🚀 3 Killer Features (2026 Mega-Trends)
-
-### 🥇 1. PageMind Vision — The AI That Draws on Webpages
-- **What it does:** Instead of answering in text alone, PageMind **physically annotates the webpage**.
-- **Visual Overlays:**
-  - **Red Bounding Boxes:** Highlights loaded language, biased headlines, or errors with corner tech brackets.
-  - **Green Boxes:** Draws green arrows and boxes around verified sources or updates.
-  - **3D Translucent Sticky Notes:** Pin-drops notes explaining key findings right above elements.
-
-### 2. PageMind Agent — The AI That Clicks & Fills For You
-- **What it does:** Gives the AI hands to navigate webpages, fill forms, and click buttons.
-- **3D Ghost Laser Cursor:** Renders a glowing laser orb cursor with 60fps spring motion physics that glides across the screen.
-- **Automated Interaction:** Performs character-by-character form typing, click ripple effects, and smooth window scrolling.
-- **Audio Feedback:** Synthesizes native sci-fi sound FX using the Web Audio API for clicks and target acquisition.
-
-### 🥉 3. PageMind MCP Router — Connected Tools Hub
-- **What it does:** Uses the Model Context Protocol (MCP) to route commands from any webpage to external tools.
-- **Integrations Supported:**
-  - **Notion API:** Creates Notion database tasks from webpage summaries.
-  - **Calendar & .ICS:** Prepares Google Calendar links and generates downloadable `.ics` calendar files.
-  - **GitHub API:** Logs GitHub issues for code audits or page bugs.
-  - **Slack Webhooks:** Sends rich channel notifications instantly.
+![PageMind Vision Mode](assets/vision_mode.png)
 
 ---
 
-## 📥 Quick Start Installation Guide (For Anyone)
+### 🥈 2. PageMind Agent — Interactive Form Automation & 3D Ghost Laser Cursor
+Give your AI hands. PageMind Agent moves a glowing **3D Laser Orb Ghost Cursor** with 60fps spring motion physics across your screen, scrolls to elements, clicks buttons with ripple effects, and performs character-by-character form field typing with native Web Audio API sound FX.
 
-Anyone can clone and install PageMind in Chrome in **under 60 seconds**:
+![PageMind Agent Mode](assets/agent_mode.png)
 
-### Step 1: Download or Clone the Repository
-```bash
-git clone https://github.com/Sriram-J-CS/PageMind-AI-generic-sidebar.git
-```
-*(Or click **Code ➔ Download ZIP** on GitHub and extract it).*
+---
 
-### Step 2: Load into Google Chrome
-1. Open Google Chrome and go to `chrome://extensions`.
+### 🥉 3. PageMind MCP Router — Connected Tools Hub (Notion, Calendar, GitHub, Slack)
+Execute external service tasks from any webpage using the **Model Context Protocol (MCP)**. PageMind automatically creates Notion database items, generates Google Calendar links & downloadable `.ics` calendar files, logs GitHub issues, and posts rich Slack webhook notifications with interactive tool cards in the chat stream.
+
+![PageMind MCP Mode](assets/mcp_mode.png)
+
+---
+
+## 📖 How to Install & Use (Step-by-Step)
+
+### 📥 Step 1: Download the Extension Code
+1. Click the **Code** button at the top of this repository and select **Download ZIP**.
+2. Extract the downloaded ZIP file to a folder on your computer (or run `git clone https://github.com/Sriram-J-CS/PageMind-AI-generic-sidebar.git`).
+
+---
+
+### 🔌 Step 2: Load Extension into Google Chrome
+1. Open Google Chrome and type `chrome://extensions` in the address bar.
 2. Enable **Developer mode** using the toggle switch in the top-right corner.
 3. Click **Load unpacked** (top-left button).
-4. Select the `PageMind-AI-generic-sidebar` folder you downloaded.
+4. Select the `PageMind-AI-generic-sidebar` folder.
 
 ---
 
-## ⚙️ Configuration & API Setup
-
-1. Click the **PageMind extension icon** in your Chrome toolbar.
-2. Enter your **OpenAI API Key** (`gpt-4o` or `gpt-4o-mini`).
-3. *(Optional)* Click **Advanced MCP Integrations** to enter your Notion Token, Notion Database ID, GitHub Token, or Slack Webhook URL.
+### ⚙️ Step 3: Configure Settings & API Keys
+1. Click the **PageMind icon** in your Chrome extension toolbar.
+2. Enter your **OpenAI API Key** (`sk-...`).
+3. *(Optional)* Click **Advanced MCP Integrations** to add your Notion Token, Notion Database ID, GitHub Token, or Slack Webhook URL.
 4. Click **✨ Save Settings & Activate**.
 5. Click **🧪 Test OpenAI Connection** to verify your key.
 
-> **💡 Instant Demo Mode:** If you do not have an API key right away, PageMind includes built-in smart fallback demo modes for Vision, Agent, and MCP so you can test all features immediately!
+> **💡 Instant Demo Mode:** Don't have an API key ready? PageMind features smart built-in demo fallback modes for Vision, Agent, and MCP so you can test all features immediately without any setup!
 
 ---
 
-## ⌨️ Keyboard Shortcuts & Triggers
+## 🎮 How to Trigger & Operate PageMind
 
-| Shortcut / Trigger | Action |
-| :--- | :--- |
-| <kbd>Alt</kbd> + <kbd>P</kbd> | Toggle 3D PageMind Sidebar |
-| <kbd>Alt</kbd> + <kbd>V</kbd> | Launch 3D Vision Mode |
-| <kbd>Alt</kbd> + <kbd>A</kbd> | Launch Agent Mode |
-| **Floating 3D Orb** | Click the glowing orb on the bottom-right of any webpage |
-| **Right-Click Menu** | Context menu shortcuts: "Annotate with PageMind Vision" |
+You can activate PageMind on **any webpage** using any of these 4 convenient methods:
+
+1. **Floating 3D Orb Widget:** Click the glowing 🔮 orb anchored at the bottom-right corner of any webpage.
+2. **Keyboard Shortcuts:**
+   - <kbd>Alt</kbd> + <kbd>P</kbd> — Toggle 3D PageMind Sidebar
+   - <kbd>Alt</kbd> + <kbd>V</kbd> — Launch 3D Vision Annotator
+   - <kbd>Alt</kbd> + <kbd>A</kbd> — Launch Agent Laser Cursor Mode
+3. **Right-Click Context Menu:** Select text on any webpage ➔ Right-click ➔ Choose **"🎯 Annotate with PageMind Vision"** or **"🤖 Control with PageMind Agent"**.
+4. **Extension Popup:** Click the **⚡ Open** button inside the extension popup window.
 
 ---
 
@@ -91,23 +82,26 @@ PageMind-AI-generic-sidebar/
 ├── icon16.png          # 16x16 Extension Icon
 ├── icon48.png          # 48x48 Extension Icon
 ├── icon128.png         # 128x128 Extension Icon
+├── assets/             # Screenshots showcasing Vision, Agent & MCP UI
+│   ├── vision_mode.png
+│   ├── agent_mode.png
+│   └── mcp_mode.png
 ├── LICENSE             # MIT Open Source License
 └── README.md           # Documentation & instructions
 ```
 
 ---
 
-## 🛠️ Built With
+## 🛠️ Tech Stack & Design Architecture
 
-- **HTML5 & Vanilla JavaScript (ES2026)**
-- **CSS3 3D Glassmorphism & Keyframe Animations**
-- **Chrome Extension API (Manifest V3)**
-- **OpenAI GPT-4o / GPT-4o-mini API**
-- **Model Context Protocol (MCP)**
-- **Web Audio API Synth**
+- **Manifest Version:** Chrome Extension V3
+- **Styling:** Vanilla CSS3 3D Glassmorphism (`backdrop-filter: blur(28px)`), Neon Accents & Keyframe Animations
+- **Engine:** Pure JavaScript (ES2026) with DOM Node TreeWalker position calculation engine
+- **Audio:** Web Audio API Frequency Oscillator Synth
+- **Protocol:** Model Context Protocol (MCP) Router
 
 ---
 
 ## 📜 License
 
-This project is licensed under the **MIT License** — feel free to modify, distribute, and build upon it!
+This project is open-source under the **MIT License** — free to use, modify, and distribute.
