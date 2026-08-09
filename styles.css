@@ -1,0 +1,524 @@
+/* ==========================================================================
+   PAGEMIND 3D DESIGN SYSTEM & OVERLAY ENGINE
+   ========================================================================== */
+
+/* Host isolation variables */
+:root {
+  --pm-bg-glass: rgba(13, 14, 30, 0.92);
+  --pm-border-glass: rgba(99, 102, 241, 0.35);
+  --pm-border-glow: rgba(168, 85, 247, 0.4);
+  --pm-primary: #6366f1;
+  --pm-purple: #8b5cf6;
+  --pm-pink: #ec4899;
+  --pm-cyan: #06b6d4;
+  --pm-emerald: #10b981;
+  --pm-amber: #f59e0b;
+  --pm-rose: #ef4444;
+  --pm-text: #f8fafc;
+  --pm-text-sub: #94a3b8;
+}
+
+/* ==========================================================================
+   1. FLOATING 3D ORB TRIGGER WIDGET
+   ========================================================================== */
+#pagemind-floating-orb {
+  position: fixed;
+  bottom: 32px;
+  right: 28px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #a5b4fc, #6366f1 55%, #3730a3);
+  box-shadow: 0 10px 30px rgba(99, 102, 241, 0.6), inset 0 2px 4px rgba(255, 255, 255, 0.4), inset 0 -4px 6px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  z-index: 2147483640;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  user-select: none;
+}
+
+#pagemind-floating-orb:hover {
+  transform: scale(1.12) translateY(-4px);
+  box-shadow: 0 16px 40px rgba(236, 72, 153, 0.7), inset 0 2px 6px rgba(255, 255, 255, 0.6);
+}
+
+#pagemind-floating-orb::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, #6366f1, #ec4899, #06b6d4, #6366f1);
+  z-index: -1;
+  opacity: 0.75;
+  filter: blur(8px);
+  animation: pmOrbSpin 6s linear infinite;
+}
+
+#pagemind-floating-orb .pm-orb-icon {
+  font-size: 24px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+}
+
+#pagemind-floating-orb .pm-orb-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background: linear-gradient(135deg, #ec4899, #ef4444);
+  color: white;
+  font-size: 9px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+}
+
+@keyframes pmOrbSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ==========================================================================
+   2. MAIN 3D SIDEBAR CONTAINER
+   ========================================================================== */
+#pagemind-sidebar {
+  position: fixed;
+  top: 0;
+  right: -440px;
+  width: 410px;
+  height: 100vh;
+  background: var(--pm-bg-glass);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  color: var(--pm-text);
+  z-index: 2147483646;
+  display: flex;
+  flex-direction: column;
+  transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  box-shadow: -10px 0 40px rgba(0, 0, 0, 0.6), inset 1px 0 1px rgba(255, 255, 255, 0.15);
+  border-left: 1px solid var(--pm-border-glass);
+  overflow: hidden;
+}
+
+#pagemind-sidebar.open {
+  right: 0;
+}
+
+/* Header */
+.pagemind-header {
+  padding: 16px 20px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.25) 0%, rgba(139, 92, 246, 0.2) 100%);
+  border-bottom: 1px solid var(--pm-border-glass);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pagemind-header-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pagemind-header-title h3 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #ffffff 0%, #c7d2fe 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.3px;
+}
+
+.pagemind-close {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: white;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.pagemind-close:hover {
+  background: rgba(239, 68, 68, 0.3);
+  border-color: rgba(239, 68, 68, 0.6);
+}
+
+/* Mode Switcher Tabs */
+.pagemind-modes {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  padding: 10px 14px;
+  background: rgba(0, 0, 0, 0.25);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.pagemind-mode-btn {
+  padding: 8px 4px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  color: var(--pm-text-sub);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.pagemind-mode-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f1f5f9;
+}
+
+.pagemind-mode-btn.active {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(168, 85, 247, 0.25));
+  border-color: var(--pm-primary);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+}
+
+/* Chat Stream */
+.pagemind-chat {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.pagemind-msg {
+  max-width: 90%;
+  padding: 12px 16px;
+  border-radius: 14px;
+  font-size: 13px;
+  line-height: 1.55;
+  animation: pmFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  word-break: break-word;
+}
+
+.pagemind-msg.user {
+  align-self: flex-end;
+  background: linear-gradient(135deg, #6366f1 0%, #7c3aed 100%);
+  color: white;
+  border-bottom-right-radius: 4px;
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+}
+
+.pagemind-msg.ai {
+  align-self: flex-start;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+  border-bottom-left-radius: 4px;
+}
+
+.pagemind-msg.system {
+  align-self: center;
+  background: rgba(6, 182, 212, 0.15);
+  border: 1px solid rgba(6, 182, 212, 0.3);
+  color: #67e8f9;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 20px;
+  text-align: center;
+}
+
+/* MCP Tool Action Cards in Chat */
+.pagemind-tool-card {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-top: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.pagemind-tool-card .tool-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--pm-emerald);
+  margin-bottom: 4px;
+}
+
+.pagemind-tool-card .tool-body {
+  font-size: 12px;
+  color: #cbd5e1;
+}
+
+/* Input Area */
+.pagemind-input-area {
+  padding: 14px 16px;
+  background: rgba(0, 0, 0, 0.3);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.pagemind-input {
+  flex: 1;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  color: #f8fafc;
+  font-size: 13px;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.pagemind-input:focus {
+  border-color: var(--pm-primary);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 16px rgba(99, 102, 241, 0.35);
+}
+
+.pagemind-send {
+  padding: 12px 18px;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+}
+
+.pagemind-send:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.6);
+}
+
+/* ==========================================================================
+   3. PAGEMIND VISION OVERLAYS (3D BOXES, STICKY NOTES, BADGES)
+   ========================================================================== */
+.pagemind-overlay-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2147483645;
+}
+
+.pagemind-annotation-box {
+  position: absolute;
+  border: 2px solid;
+  border-radius: 6px;
+  pointer-events: none;
+  animation: pmPopIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-sizing: border-box;
+}
+
+/* 3D Glowing Box Colors */
+.pagemind-annotation-box.red {
+  border-color: var(--pm-rose);
+  box-shadow: 0 0 16px rgba(239, 68, 68, 0.5), inset 0 0 10px rgba(239, 68, 68, 0.15);
+  background: rgba(239, 68, 68, 0.06);
+}
+.pagemind-annotation-box.green {
+  border-color: var(--pm-emerald);
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.5), inset 0 0 10px rgba(16, 185, 129, 0.15);
+  background: rgba(16, 185, 129, 0.06);
+}
+.pagemind-annotation-box.yellow {
+  border-color: var(--pm-amber);
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.5), inset 0 0 10px rgba(245, 158, 11, 0.15);
+  background: rgba(245, 158, 11, 0.06);
+}
+.pagemind-annotation-box.blue {
+  border-color: var(--pm-cyan);
+  box-shadow: 0 0 16px rgba(6, 182, 212, 0.5), inset 0 0 10px rgba(6, 182, 212, 0.15);
+  background: rgba(6, 182, 212, 0.06);
+}
+
+/* Corner Bracket Accents */
+.pagemind-annotation-box::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  width: 10px;
+  height: 10px;
+  border-top: 3px solid currentColor;
+  border-left: 3px solid currentColor;
+}
+
+.pagemind-annotation-box::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  width: 10px;
+  height: 10px;
+  border-bottom: 3px solid currentColor;
+  border-right: 3px solid currentColor;
+}
+
+/* 3D Sticky Note */
+.pagemind-sticky-note {
+  position: absolute;
+  background: linear-gradient(135deg, #fef08a 0%, #fde047 100%);
+  color: #713f12;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  max-width: 240px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.1);
+  pointer-events: auto;
+  animation: pmSlideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 2147483647;
+  border: 1px solid rgba(250, 204, 21, 0.8);
+}
+
+.pagemind-sticky-note::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 20px;
+  border-width: 8px 8px 0;
+  border-style: solid;
+  border-color: #fde047 transparent;
+}
+
+/* Text Highlight */
+.pagemind-highlight {
+  position: absolute;
+  background: rgba(236, 72, 153, 0.25);
+  border-bottom: 2px solid var(--pm-pink);
+  pointer-events: none;
+  animation: pmFadeIn 0.4s ease;
+  border-radius: 3px;
+}
+
+/* Status Badge */
+.pagemind-badge {
+  position: absolute;
+  background: linear-gradient(135deg, #ec4899, #8b5cf6);
+  color: white;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 20px;
+  box-shadow: 0 4px 14px rgba(236, 72, 153, 0.5);
+  pointer-events: none;
+  animation: pmPopIn 0.3s ease;
+  z-index: 2147483647;
+}
+
+/* ==========================================================================
+   4. GHOST LASER CURSOR (AGENT MODE)
+   ========================================================================== */
+.pagemind-ghost-cursor {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  border: 2px solid var(--pm-cyan);
+  border-radius: 50%;
+  background: rgba(6, 182, 212, 0.2);
+  pointer-events: none;
+  z-index: 2147483647;
+  transition: transform 0.15s ease-out;
+  box-shadow: 0 0 25px var(--pm-cyan), inset 0 0 10px var(--pm-cyan);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pagemind-ghost-cursor::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background: #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #ffffff;
+}
+
+.pagemind-ghost-cursor.click {
+  animation: pmCursorClick 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  background: rgba(236, 72, 153, 0.6);
+  border-color: var(--pm-pink);
+  box-shadow: 0 0 35px var(--pm-pink);
+}
+
+@keyframes pmCursorClick {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.6); }
+  100% { transform: scale(1.2); }
+}
+
+/* ==========================================================================
+   5. TOAST NOTIFICATIONS
+   ========================================================================== */
+.pagemind-toast {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(16px);
+  color: #f8fafc;
+  padding: 12px 24px;
+  border-radius: 14px;
+  font-size: 13px;
+  font-weight: 700;
+  border: 1px solid var(--pm-border-glass);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(99, 102, 241, 0.3);
+  z-index: 2147483647;
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pagemind-toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+/* Keyframe animations */
+@keyframes pmFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pmPopIn {
+  from { opacity: 0; transform: scale(0.7); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes pmSlideDown {
+  from { opacity: 0; transform: translateY(-12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Custom Scrollbar */
+#pagemind-sidebar ::-webkit-scrollbar { width: 6px; }
+#pagemind-sidebar ::-webkit-scrollbar-track { background: transparent; }
+#pagemind-sidebar ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.18); border-radius: 3px; }
+#pagemind-sidebar ::-webkit-scrollbar-thumb:hover { background: rgba(99, 102, 241, 0.5); }

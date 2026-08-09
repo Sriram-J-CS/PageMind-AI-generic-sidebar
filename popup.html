@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PageMind — Control Center</title>
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #090a16 0%, #12142e 50%, #1a103c 100%);
+      --glass-bg: rgba(255, 255, 255, 0.05);
+      --glass-border: rgba(255, 255, 255, 0.12);
+      --glass-glow: rgba(99, 102, 241, 0.25);
+      --accent-primary: #6366f1;
+      --accent-pink: #ec4899;
+      --accent-cyan: #06b6d4;
+      --accent-emerald: #10b981;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      width: 360px;
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      padding: 16px;
+      overflow-x: hidden;
+    }
+
+    /* 3D Glass Panel */
+    .card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: 14px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .card:hover {
+      border-color: rgba(99, 102, 241, 0.4);
+      box-shadow: 0 12px 36px rgba(99, 102, 241, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.25);
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-orb {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #a5b4fc, #6366f1 60%, #4338ca);
+      box-shadow: 0 0 16px rgba(99, 102, 241, 0.8), inset 0 -2px 4px rgba(0,0,0,0.4);
+      animation: pulseOrb 3s infinite ease-in-out;
+    }
+
+    @keyframes pulseOrb {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 16px rgba(99, 102, 241, 0.8); }
+      50% { transform: scale(1.06); box-shadow: 0 0 24px rgba(236, 72, 153, 0.9); }
+    }
+
+    .brand h1 {
+      font-size: 18px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #ffffff 0%, #c7d2fe 50%, #818cf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
+    }
+
+    .brand-tag {
+      font-size: 9px;
+      font-weight: 700;
+      background: rgba(99, 102, 241, 0.2);
+      border: 1px solid rgba(99, 102, 241, 0.4);
+      color: #c7d2fe;
+      padding: 2px 6px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Form Inputs */
+    .field-group {
+      margin-bottom: 12px;
+    }
+
+    label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    label span.optional {
+      font-size: 10px;
+      color: #64748b;
+      font-weight: 500;
+      text-transform: none;
+    }
+
+    input[type="text"], input[type="password"] {
+      width: 100%;
+      padding: 10px 12px;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      color: var(--text-main);
+      font-size: 12px;
+      outline: none;
+      transition: all 0.2s ease;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    input[type="text"]:focus, input[type="password"]:focus {
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 12px rgba(99, 102, 241, 0.4), inset 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Buttons */
+    .btn-primary {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 25px rgba(217, 70, 239, 0.5);
+    }
+
+    .btn-primary:active {
+      transform: translateY(1px);
+    }
+
+    .btn-secondary {
+      width: 100%;
+      padding: 9px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #e2e8f0;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 8px;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    /* Status Banner */
+    .status-toast {
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      text-align: center;
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .status-toast.success {
+      background: rgba(16, 185, 129, 0.2);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #34d399;
+    }
+
+    .status-toast.error {
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #f87171;
+    }
+
+    /* Accordion Tabs for Integrations */
+    .accordion-toggle {
+      background: none;
+      border: none;
+      color: var(--accent-cyan);
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .accordion-content {
+      display: none;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px dashed rgba(255, 255, 255, 0.1);
+    }
+
+    .accordion-content.show {
+      display: block;
+    }
+
+    /* Features Badges Grid */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .feature-pill {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 8px 4px;
+      text-align: center;
+    }
+
+    .feature-pill .icon {
+      font-size: 16px;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .feature-pill .title {
+      font-size: 10px;
+      font-weight: 700;
+      color: #cbd5e1;
+    }
+
+    /* Keyboard Hints */
+    .shortcuts-box {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .key {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 10px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Card: Header -->
+  <div class="card">
+    <div class="header">
+      <div class="brand">
+        <div class="brand-orb"></div>
+        <div>
+          <h1>PageMind</h1>
+          <span class="brand-tag">3D AI Suite</span>
+        </div>
+      </div>
+      <button id="openSidebarBtn" class="btn-secondary" style="width:auto; margin:0; padding:6px 12px;">⚡ Open</button>
+    </div>
+
+    <!-- Feature Grid -->
+    <div class="features-grid">
+      <div class="feature-pill">
+        <span class="icon">🎯</span>
+        <span class="title">3D Vision</span>
+      </div>
+      <div class="feature-pill">
+        <span class="icon">🤖</span>
+        <span class="title">Laser Agent</span>
+      </div>
+      <div class="feature-pill">
+        <span class="icon">🔗</span>
+        <span class="title">MCP Router</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card: Primary API Settings -->
+  <div class="card">
+    <div class="field-group">
+      <label for="apiKey">OpenAI API Key <span style="color:#ef4444">*</span></label>
+      <input type="password" id="apiKey" placeholder="sk-proj-..." />
+    </div>
+
+    <button class="accordion-toggle" id="toggleIntegrations">
+      ⚙️ Advanced MCP Integrations (Notion, GitHub, Slack) ▾
+    </button>
+
+    <div class="accordion-content" id="integrationsContent">
+      <div class="field-group">
+        <label for="notionToken">Notion Token <span class="optional">(optional)</span></label>
+        <input type="password" id="notionToken" placeholder="secret_..." />
+      </div>
+
+      <div class="field-group">
+        <label for="notionDbId">Notion Database ID <span class="optional">(optional)</span></label>
+        <input type="text" id="notionDbId" placeholder="32-char hex id..." />
+      </div>
+
+      <div class="field-group">
+        <label for="githubToken">GitHub Token <span class="optional">(optional)</span></label>
+        <input type="password" id="githubToken" placeholder="ghp_..." />
+      </div>
+
+      <div class="field-group">
+        <label for="slackWebhook">Slack Webhook URL <span class="optional">(optional)</span></label>
+        <input type="password" id="slackWebhook" placeholder="https://hooks.slack.com/services/..." />
+      </div>
+    </div>
+
+    <div style="margin-top:12px;">
+      <button id="saveBtn" class="btn-primary">✨ Save Settings & Activate</button>
+      <button id="testApiKeyBtn" class="btn-secondary">🧪 Test OpenAI Connection</button>
+    </div>
+
+    <div class="status-toast" id="status"></div>
+  </div>
+
+  <!-- Card: Shortcuts -->
+  <div class="card shortcuts-box">
+    <strong style="color:#f1f5f9; display:block; margin-bottom:4px;">⌨️ Keyboard Shortcuts:</strong>
+    <div><span class="key">Alt</span> + <span class="key">P</span> — Toggle 3D Sidebar</div>
+    <div><span class="key">Alt</span> + <span class="key">V</span> — Launch 3D Vision Annotator</div>
+    <div><span class="key">Alt</span> + <span class="key">A</span> — Launch Agent Mode</div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
