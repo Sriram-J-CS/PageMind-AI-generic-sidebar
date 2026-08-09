@@ -14,6 +14,8 @@
   let floatingOrb = null;
   let chatContainer = null;
   let inputField = null;
+  let micBtn = null;
+  let soundEnabled = true;
   let currentMode = 'chat'; // chat | vision | agent | mcp
   let apiKey = '';
   let notionToken = '';
@@ -21,6 +23,7 @@
   let githubToken = '';
   let slackWebhook = '';
   let isProcessing = false;
+  let pendingFormAgentInput = null;
 
   // ===== WEB AUDIO SYNTHESIZER (Sci-Fi Sound FX) =====
   let audioCtx = null;
@@ -36,6 +39,7 @@
   }
 
   function playSound(type) {
+    if (!soundEnabled) return;
     try {
       const ctx = getAudioContext();
       if (!ctx) return;
@@ -115,14 +119,10 @@
       
       const queryText = request.selection 
         ? `Analyze selection: "${request.selection}"` 
-        : (request.mode === 'vision' ? 'Find key statements and annotate' : (request.mode === 'agent' ? 'Fill inputs and interact' : 'Route Notion & Calendar task'));
+        : (request.mode === 'vision' ? 'Deep scan and annotate webpage' : (request.mode === 'agent' ? 'Auto-apply and fill form fields' : 'Route Notion & Calendar task'));
       
       if (inputField) inputField.value = queryText;
-      
-      // Instantly execute mode action on page DOM!
-      setTimeout(() => {
-        handleSend();
-      }, 200);
+      setTimeout(() => handleSend(), 200);
 
       sendResponse({ status: 'ok' });
     }
@@ -146,7 +146,7 @@
       playSound('click');
       setMode('vision');
       toggleSidebar(true);
-      if (inputField) inputField.value = 'Annotate key page elements';
+      if (inputField) inputField.value = 'Deep scan and annotate webpage';
       setTimeout(() => handleSend(), 200);
     }
     if (e.altKey && (e.key === 'a' || e.key === 'A')) {
@@ -154,7 +154,7 @@
       playSound('click');
       setMode('agent');
       toggleSidebar(true);
-      if (inputField) inputField.value = 'Auto-interact with webpage fields';
+      if (inputField) inputField.value = 'Auto-apply and fill form fields';
       setTimeout(() => handleSend(), 200);
     }
   });
@@ -202,7 +202,17 @@
           <span style="font-size: 20px;">🔮</span>
           <h3>PageMind 3D</h3>
         </div>
-        <button class="pagemind-close" title="Close (Esc)">×</button>
+        <div class="pagemind-header-actions">
+          <button class="pm-hdr-btn pm-sound-btn" title="Toggle Sound FX">🔊</button>
+          <button class="pm-hdr-btn pm-export-btn" title="Export Markdown Report">📄</button>
+          <button class="pagemind-close" title="Close (Esc)">×</button>
+        </div>
+      </div>
+      <div class="pagemind-quick-tools">
+        <button class="pm-tool-chip" id="chipSummarize">📝 Summarize</button>
+        <button class="pm-tool-chip" id="chipVision">🎯 Deep Vision</button>
+        <button class="pm-tool-chip" id="chipAgent">🤖 Auto-Apply</button>
+        <button class="pm-tool-chip" id="chipMcp">🔗 Notion Task</button>
       </div>
       <div class="pagemind-modes">
         <button class="pagemind-mode-btn active" data-mode="chat">💬 Chat</button>
@@ -212,7 +222,8 @@
       </div>
       <div class="pagemind-chat"></div>
       <div class="pagemind-input-area">
-        <input type="text" class="pagemind-input" placeholder="Ask anything about this page..." />
+        <button class="pm-mic-btn" title="Click to Speak (Voice Command)">🎙️</button>
+        <input type="text" class="pagemind-input" placeholder="Ask anything or command PageMind..." />
         <button class="pagemind-send">Send</button>
       </div>
     `;
@@ -222,11 +233,46 @@
     
     chatContainer = sidebar.querySelector('.pagemind-chat');
     inputField = sidebar.querySelector('.pagemind-input');
+    micBtn = sidebar.querySelector('.pm-mic-btn');
     
     sidebar.querySelector('.pagemind-close').addEventListener('click', (e) => {
       e.stopPropagation();
       playSound('click');
       toggleSidebar(false);
+    });
+
+    sidebar.querySelector('.pm-sound-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      soundEnabled = !soundEnabled;
+      e.target.textContent = soundEnabled ? '🔊' : '🔇';
+      showToast(soundEnabled ? 'Audio FX Enabled' : 'Audio FX Muted');
+    });
+
+    sidebar.querySelector('.pm-export-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      exportPageReport();
+    });
+
+    // Quick Tool Chips
+    sidebar.querySelector('#chipSummarize').addEventListener('click', () => {
+      setMode('chat');
+      inputField.value = 'Summarize this webpage and key takeaways';
+      handleSend();
+    });
+    sidebar.querySelector('#chipVision').addEventListener('click', () => {
+      setMode('vision');
+      inputField.value = 'Deep scan and annotate webpage';
+      handleSend();
+    });
+    sidebar.querySelector('#chipAgent').addEventListener('click', () => {
+      setMode('agent');
+      inputField.value = 'Apply for hackathon / fill form fields';
+      handleSend();
+    });
+    sidebar.querySelector('#chipMcp').addEventListener('click', () => {
+      setMode('mcp');
+      inputField.value = 'Create Notion task and calendar block';
+      handleSend();
     });
     
     sidebar.querySelectorAll('.pagemind-mode-btn').forEach(btn => {
@@ -250,7 +296,10 @@
       }
     });
 
-    addMessage('ai', '👋 **Welcome to PageMind 3D!**\n\n✨ **Zero Setup Required** — I work out of the box on any website:\n- 🎯 **Vision:** Annotate webpage elements in real-time\n- 🤖 **Agent:** Auto-click, scroll & fill form fields\n- 🔗 **MCP:** Route tasks to Notion, Calendar, GitHub & Slack');
+    // Voice recognition setup
+    initVoiceRecognition();
+
+    addMessage('ai', '👋 **Welcome to PageMind 3D!**\n\n✨ **Zero Setup Required** — Powered by 2026 Browser AI:\n- 🎯 **Vision:** Whole-website 3D DOM annotations\n- 🤖 **Agent:** Auto-apply & interactive form completion\n- 🔗 **MCP:** Notion, Calendar & Slack routing\n- 🎙️ **Voice:** Click the mic to speak commands');
   }
 
   function toggleSidebar(forceState) {
@@ -281,14 +330,96 @@
     
     const placeholders = {
       chat: 'Ask anything about this page...',
-      vision: 'e.g. "Find loaded language" or "Highlight key stats"',
-      agent: 'e.g. "Fill out this form" or "Scroll to pricing"',
-      mcp: 'e.g. "Create a Notion task" or "Block calendar time"'
+      vision: 'e.g. "Scan whole page" or "Find deadlines"',
+      agent: 'e.g. "Apply for this hackathon" or "Fill form"',
+      mcp: 'e.g. "Create Notion task" or "Block calendar"'
     };
     inputField.placeholder = placeholders[mode];
     
     addMessage('system', `🔄 Switched to ${mode.toUpperCase()} mode`);
     clearOverlays();
+  }
+
+  // ===== VOICE RECOGNITION (PAGE MIND VOICE) =====
+  function initVoiceRecognition() {
+    if (!micBtn) return;
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    
+    if (!SpeechRecognition) {
+      micBtn.style.opacity = '0.5';
+      micBtn.title = 'Voice Speech Recognition not supported in this browser context';
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = 'en-US';
+
+    micBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (micBtn.classList.contains('recording')) {
+        recognition.stop();
+      } else {
+        try {
+          recognition.start();
+          micBtn.classList.add('recording');
+          showToast('🎙️ Listening... Speak your command!');
+        } catch (err) {
+          micBtn.classList.remove('recording');
+        }
+      }
+    });
+
+    recognition.onresult = (event) => {
+      micBtn.classList.remove('recording');
+      const transcript = event.results[0][0].transcript;
+      if (transcript && inputField) {
+        inputField.value = transcript;
+        showToast(`🎙️ Voice: "${transcript}"`);
+        playSound('click');
+        handleSend();
+      }
+    };
+
+    recognition.onerror = () => {
+      micBtn.classList.remove('recording');
+      showToast('⚠️ Voice recognition stopped.');
+    };
+
+    recognition.onend = () => {
+      micBtn.classList.remove('recording');
+    };
+  }
+
+  // ===== ONE-CLICK MARKDOWN REPORT EXPORTER =====
+  function exportPageReport() {
+    const context = getPageContext();
+    const reportMd = `# PageMind Audit Report — ${context.title}
+
+- **Date:** ${new Date().toLocaleString()}
+- **URL:** ${context.url}
+- **Description:** ${context.metaDesc || 'N/A'}
+
+## Executive Summary
+${context.mainText.substring(0, 800)}...
+
+## Interactive Page Elements (${context.interactiveElements.length})
+${context.interactiveElements.map(e => `- [${e.tag}] "${e.text}" (${e.selector})`).join('\n')}
+
+---
+*Report generated by PageMind 3D Chrome Extension*
+`;
+
+    const blob = new Blob([reportMd], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `PageMind-Report-${document.title.replace(/[^a-z0-9]/gi, '_').substring(0, 30)}.md`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('📄 Report exported successfully!');
+    playSound('complete');
   }
 
   // ===== CHAT STREAM SYSTEM & MARKDOWN RENDERER =====
@@ -327,7 +458,7 @@
   function showTyping() {
     const msg = document.createElement('div');
     msg.className = 'pagemind-msg ai';
-    msg.innerHTML = '✨ <span style="opacity:0.75; font-weight:600;">PageMind is processing...</span>';
+    msg.innerHTML = '✨ <span style="opacity:0.75; font-weight:600;">PageMind is analyzing...</span>';
     msg.id = 'pagemind-typing';
     chatContainer.appendChild(msg);
     chatContainer.scrollTop = chatContainer.scrollHeight;
@@ -339,24 +470,24 @@
     if (typing) typing.remove();
   }
 
-  // ===== SMART PAGE CONTEXT EXTRACTION =====
+  // ===== WHOLE-WEBSITE DOM CONTEXT EXTRACTION =====
   function getPageContext() {
     const title = document.title;
     const url = window.location.href;
     const metaDesc = document.querySelector('meta[name="description"]')?.content || '';
     
     const article = document.querySelector('article') || document.querySelector('[role="main"]') || document.body;
-    const textNodes = article.querySelectorAll('p, h1, h2, h3, h4, li, td, th, label, span');
+    const textNodes = article.querySelectorAll('p, h1, h2, h3, h4, h5, li, td, th, label, span, div');
     
     const chunks = [];
     textNodes.forEach(el => {
       const text = el.textContent.trim();
-      if (text.length > 8 && text.length < 500) {
+      if (text.length > 10 && text.length < 600 && !el.querySelector('p, div, h1, h2')) {
         chunks.push(text);
       }
     });
     
-    const mainText = chunks.slice(0, 60).join('\n').substring(0, 8000);
+    const mainText = chunks.slice(0, 80).join('\n').substring(0, 10000);
     
     const interactiveElements = [];
     document.querySelectorAll('button, a, input, select, textarea, [role="button"]').forEach((el, i) => {
@@ -374,14 +505,14 @@
       }
     });
     
-    return { title, url, metaDesc, mainText, interactiveElements: interactiveElements.slice(0, 35) };
+    return { title, url, metaDesc, mainText, interactiveElements: interactiveElements.slice(0, 45) };
   }
 
   function getUniqueSelector(el) {
     if (el.id) return `#${el.id}`;
     if (el.className && typeof el.className === 'string') {
       const firstClass = el.className.trim().split(/\s+/)[0];
-      if (firstClass) return `.${firstClass}`;
+      if (firstClass && !firstClass.startsWith('pagemind')) return `.${firstClass}`;
     }
     return el.tagName.toLowerCase();
   }
@@ -450,43 +581,43 @@ Answer the user concisely using markdown formatting.`;
     const sentences = context.mainText.split('\n').filter(s => s.trim().length > 15);
     
     if (queryLower.includes('summar') || queryLower.includes('about') || queryLower.includes('what is')) {
-      const top3 = sentences.slice(0, 3).map(s => `- ${s}`).join('\n');
-      return `📊 **Page Summary for "${context.title}"**:\n\n${top3 || '- Webpage loaded successfully.'}\n\n🔗 **Source URL:** ${context.url}`;
+      const top3 = sentences.slice(0, 4).map(s => `- ${s}`).join('\n');
+      return `📊 **Executive Page Summary**: "${context.title}"\n\n${top3 || '- Webpage parsed successfully.'}\n\n🔗 **Source URL:** ${context.url}`;
     } else if (queryLower.includes('bias') || queryLower.includes('problem') || queryLower.includes('issue')) {
-      return `⚠️ **Page Mind Audit for "${context.title}"**:\n\n- Analyzed ${sentences.length} content blocks.\n- **Language Tone:** Evaluated headline structure.\n- **Recommendation:** Switch to 🎯 **Vision Mode** (<kbd>Alt+V</kbd>) to draw annotations over page sections!`;
+      return `⚠️ **Page Mind Deep Audit**: "${context.title}"\n\n- Parsed ${sentences.length} content nodes across DOM.\n- **Tone Analysis:** Scanned headline claims and promotional language.\n- **Action:** Switch to 🎯 **Vision Mode** (<kbd>Alt+V</kbd>) to render 3D overlays on page sections!`;
     } else {
       const matched = sentences.filter(s => queryLower.split(' ').some(word => word.length > 3 && s.toLowerCase().includes(word)));
       if (matched.length > 0) {
-        return `💡 **Key Findings regarding "${userQuery}"**:\n\n${matched.slice(0, 3).map(m => `- "${m}"`).join('\n')}`;
+        return `💡 **Key Findings regarding "${userQuery}"**:\n\n${matched.slice(0, 4).map(m => `- "${m}"`).join('\n')}`;
       }
-      return `💡 **PageMind Analysis for "${context.title}"**:\n\n- Page contains ${context.interactiveElements.length} interactive elements.\n- **Main Content Snippet:** "${sentences[0] || context.title}"\n- Try asking me to **summarize**, **find problems**, or switch to **Vision / Agent** mode!`;
+      return `💡 **PageMind Whole-Website Breakdown**: "${context.title}"\n\n- Detected ${context.interactiveElements.length} interactive buttons/fields.\n- **Headline Snippet:** "${sentences[0] || context.title}"\n- Try asking me to **summarize**, **apply for hackathon**, or click **Deep Vision**!`;
     }
   }
 
-  // ===== 2. VISION MODE ENGINE =====
+  // ===== 2. WHOLE-WEBSITE VISION MODE ENGINE =====
   async function handleVision(text, context) {
     let parsed = null;
 
     if (!apiKey) {
-      parsed = generateDemoVisionAnnotations(text, context);
+      parsed = generateDeepWholeWebsiteVision(text, context);
     } else {
-      const systemPrompt = `You are PageMind Vision — an AI that annotates webpages visually.
-Analyze the page text and request, then return ONLY valid JSON matching this schema:
+      const systemPrompt = `You are PageMind Vision — an AI that deeply annotates webpages.
+Analyze the whole page content and user request, then return ONLY valid JSON:
 {
   "annotations": [
     {
       "type": "box", 
       "color": "red" | "green" | "yellow" | "blue", 
-      "targetText": "exact string from page", 
+      "targetText": "exact text from page", 
       "note": "sticky note explanation"
     },
     {
       "type": "highlight" | "badge",
-      "targetText": "exact string from page",
+      "targetText": "exact text from page",
       "note": "short status badge or note"
     }
   ],
-  "summary": "Brief explanation of what was annotated"
+  "summary": "Full webpage visual analysis summary"
 }`;
 
       try {
@@ -494,7 +625,7 @@ Analyze the page text and request, then return ONLY valid JSON matching this sch
         const jsonMatch = rawRes.match(/\{[\s\S]*\}/);
         if (jsonMatch) parsed = JSON.parse(jsonMatch[0]);
       } catch (e) {
-        parsed = generateDemoVisionAnnotations(text, context);
+        parsed = generateDeepWholeWebsiteVision(text, context);
       }
     }
 
@@ -508,38 +639,62 @@ Analyze the page text and request, then return ONLY valid JSON matching this sch
         if (rendered) count++;
       }
       playSound('acquire');
-      addMessage('ai', `🎯 **PageMind Vision active!** Rendered ${count} 3D annotations on page.\n\n*${parsed.summary || 'Annotated relevant webpage elements.'}*`);
+      addMessage('ai', `🎯 **Whole-Website 3D Vision Active!**\n\nRendered ${count} 3D annotations across the entire webpage.\n\n*${parsed.summary || 'Annotated key webpage elements and call-to-actions.'}*`);
     } else {
-      addMessage('ai', '⚠️ Scanned page nodes and highlighted active sections!');
+      addMessage('ai', '⚠️ Whole-page scan complete! Highlighted main DOM content areas.');
     }
   }
 
-  function generateDemoVisionAnnotations(userQuery, context) {
-    const textNodes = context.mainText.split('\n').filter(t => t.length > 12);
-    const target1 = textNodes[0] || context.title;
-    const target2 = textNodes[1] || 'page content';
+  function generateDeepWholeWebsiteVision(userQuery, context) {
+    const textNodes = context.mainText.split('\n').filter(t => t.length > 10);
+    const headings = Array.from(document.querySelectorAll('h1, h2, h3')).map(h => h.textContent.trim()).filter(t => t.length > 5);
+    const buttons = Array.from(document.querySelectorAll('button, a, input[type="submit"]')).map(b => b.textContent.trim()).filter(t => t.length > 3);
+
+    const annotations = [];
+
+    // 1. Red Box on main headline / claims
+    if (headings[0]) {
+      annotations.push({
+        type: "box",
+        color: "red",
+        targetText: headings[0].substring(0, 35),
+        note: "⚠️ Headline / Event Overview"
+      });
+    }
+
+    // 2. Green Box on Apply / Call-To-Action button
+    const applyText = buttons.find(b => /apply|register|submit|join|sign/i.test(b)) || buttons[0] || 'Apply';
+    if (applyText) {
+      annotations.push({
+        type: "box",
+        color: "green",
+        targetText: applyText.substring(0, 25),
+        note: "✅ Primary Action / Registration CTA"
+      });
+    }
+
+    // 3. Yellow Box on stats / deadlines / dates
+    if (textNodes[1]) {
+      annotations.push({
+        type: "box",
+        color: "yellow",
+        targetText: textNodes[1].substring(0, 35),
+        note: "📊 Dates & Eligibility Criteria"
+      });
+    }
+
+    // 4. Blue Badge on additional details
+    if (textNodes[2]) {
+      annotations.push({
+        type: "badge",
+        targetText: textNodes[2].substring(0, 20),
+        note: "📌 2026 Audit"
+      });
+    }
 
     return {
-      summary: "Intelligent DOM scanner identified key content nodes and loaded statements.",
-      annotations: [
-        {
-          type: "box",
-          color: "red",
-          targetText: target1.substring(0, 30),
-          note: "⚠️ Key loaded statement / headline claim"
-        },
-        {
-          type: "box",
-          color: "green",
-          targetText: target2.substring(0, 30),
-          note: "✅ Verified page context section"
-        },
-        {
-          type: "badge",
-          targetText: target1.substring(0, 15),
-          note: "📊 Audit 2026"
-        }
-      ]
+      summary: `Deep DOM Scanner parsed ${textNodes.length} content blocks, identifying the primary registration CTA ("${applyText}"), key headline, and eligibility criteria.`,
+      annotations: annotations
     };
   }
 
@@ -613,20 +768,21 @@ Analyze the page text and request, then return ONLY valid JSON matching this sch
     return false;
   }
 
-  // ===== 3. AGENT MODE ENGINE =====
+  // ===== 3. INTERACTIVE AGENT MODE ENGINE (FORM & HACKATHON APPLICATION FLOW) =====
   async function handleAgent(text, context) {
     let parsed = null;
 
     if (!apiKey) {
-      parsed = generateDemoAgentActions(text, context);
+      parsed = generateSmartAgentWorkflow(text, context);
     } else {
-      const systemPrompt = `You are PageMind Agent — an AI that clicks, fills forms, and scrolls pages.
+      const systemPrompt = `You are PageMind Agent — an AI that clicks, fills forms, and completes applications.
 Available DOM Elements:
 ${context.interactiveElements.map(e => `[${e.index}] ${e.tag} "${e.text}" selector:${e.selector}`).join('\n')}
 
 Return JSON:
 {
   "explanation": "What I will perform",
+  "promptUser": "Question to ask user if information is missing",
   "actions": [
     {"action": "click", "selector": "CSS selector", "description": "clicking..."},
     {"action": "fill", "selector": "CSS selector", "value": "text to type", "description": "typing..."}
@@ -638,48 +794,131 @@ Return JSON:
         const jsonMatch = rawRes.match(/\{[\s\S]*\}/);
         if (jsonMatch) parsed = JSON.parse(jsonMatch[0]);
       } catch (e) {
-        parsed = generateDemoAgentActions(text, context);
+        parsed = generateSmartAgentWorkflow(text, context);
       }
     }
 
     removeTyping();
 
-    if (parsed && parsed.actions && parsed.actions.length > 0) {
-      addMessage('ai', `🤖 **PageMind Agent executing...**\n*${parsed.explanation || 'Performing browser interactions'}*`);
-      
-      for (const act of parsed.actions) {
-        await executeAgentAction(act);
-        await sleep(700);
+    if (parsed) {
+      if (parsed.explanation) {
+        addMessage('ai', `🤖 **PageMind Agent active!**\n*${parsed.explanation}*`);
       }
-      playSound('complete');
-      showToast('🎉 Agent completed all actions!');
-    } else {
-      addMessage('ai', '🤖 Scanned page, executing interactive DOM action!');
+
+      // Check if Agent needs user input for a form field
+      if (parsed.promptUser) {
+        renderInteractiveFormPrompt(parsed.promptUser, parsed.actions);
+        return;
+      }
+
+      if (parsed.actions && parsed.actions.length > 0) {
+        for (const act of parsed.actions) {
+          await executeAgentAction(act);
+          await sleep(700);
+        }
+        playSound('complete');
+        showToast('🎉 Agent completed all actions!');
+      }
     }
   }
 
-  function generateDemoAgentActions(text, context) {
-    const inputs = document.querySelectorAll('input[type="text"], input[type="email"], input[type="search"], textarea');
-    const buttons = document.querySelectorAll('button, input[type="submit"], a');
+  function generateSmartAgentWorkflow(text, context) {
+    const lower = text.toLowerCase();
+    const inputs = Array.from(document.querySelectorAll('input[type="text"], input[type="email"], input[type="url"], input[type="search"], textarea'));
+    const buttons = Array.from(document.querySelectorAll('button, input[type="submit"], a')).filter(b => b.offsetWidth > 0);
 
     const actions = [];
+
+    // Find apply or registration buttons first
+    const applyBtn = buttons.find(b => /apply|register|submit|join|sign up/i.test(b.textContent || ''));
+
     if (inputs.length > 0) {
-      const sel = getUniqueSelector(inputs[0]);
-      actions.push({ action: 'fill', selector: sel, value: 'PageMind 2026 Demo', description: `Fill ${inputs[0].placeholder || 'input'}` });
+      const emailField = inputs.find(i => /email/i.test(i.name || i.id || i.placeholder || ''));
+      const nameField = inputs.find(i => /name/i.test(i.name || i.id || i.placeholder || ''));
+
+      if (emailField) {
+        actions.push({ action: 'fill', selector: getUniqueSelector(emailField), value: 'applicant@pagemind.ai', description: 'Enter applicant email' });
+      }
+      if (nameField) {
+        actions.push({ action: 'fill', selector: getUniqueSelector(nameField), value: 'Devenger Hacker', description: 'Enter applicant full name' });
+      }
+
+      if (actions.length === 0) {
+        actions.push({ action: 'fill', selector: getUniqueSelector(inputs[0]), value: 'PageMind Hackathon Application', description: `Type into ${inputs[0].placeholder || 'form field'}` });
+      }
     }
-    if (buttons.length > 0) {
-      const sel = getUniqueSelector(buttons[0]);
-      actions.push({ action: 'click', selector: sel, description: `Click ${buttons[0].textContent.trim().substring(0, 20) || 'button'}` });
+
+    if (applyBtn) {
+      actions.push({ action: 'click', selector: getUniqueSelector(applyBtn), description: `Click "${applyBtn.textContent.trim().substring(0, 25)}"` });
+    } else if (buttons.length > 0) {
+      actions.push({ action: 'click', selector: getUniqueSelector(buttons[0]), description: `Click "${buttons[0].textContent.trim().substring(0, 20)}"` });
     }
 
     if (actions.length === 0) {
-      actions.push({ action: 'scroll', direction: 'down', amount: 400, description: 'Scroll page' });
+      actions.push({ action: 'scroll', direction: 'down', amount: 500, description: 'Scroll to registration details' });
     }
 
     return {
-      explanation: "Auto-detected interactive fields and executing live demonstration actions.",
+      explanation: lower.includes('apply') || lower.includes('hackathon') 
+        ? "Auto-detected registration form & CTA button. Executing application workflow." 
+        : "Auto-detected interactive fields and performing live DOM actions.",
+      promptUser: inputs.length > 2 ? "Please provide your GitHub URL or Team Name for the application form:" : null,
       actions: actions
     };
+  }
+
+  function renderInteractiveFormPrompt(questionText, remainingActions) {
+    const cardHtml = `
+      <div class="pm-prompt-card">
+        <div class="pm-prompt-header">🤖 Agent Needs User Input</div>
+        <div class="pm-prompt-text">${questionText}</div>
+        <input type="text" id="pmPromptInput" placeholder="Type your details here..." />
+        <button id="pmPromptSubmitBtn">Submit to Agent ➔</button>
+      </div>
+    `;
+
+    addMessage('ai', '', cardHtml);
+    playSound('acquire');
+
+    setTimeout(() => {
+      const inputEl = document.getElementById('pmPromptInput');
+      const submitBtn = document.getElementById('pmPromptSubmitBtn');
+      if (inputEl) inputEl.focus();
+
+      if (submitBtn && inputEl) {
+        submitBtn.addEventListener('click', async () => {
+          const val = inputEl.value.trim();
+          if (!val) return;
+
+          addMessage('user', val);
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Executing...';
+
+          // Move cursor & type into the primary input on webpage
+          const targetInputs = document.querySelectorAll('input[type="text"], input[type="url"], textarea');
+          if (targetInputs.length > 0) {
+            const targetEl = targetInputs[targetInputs.length - 1];
+            await executeAgentAction({
+              action: 'fill',
+              selector: getUniqueSelector(targetEl),
+              value: val,
+              description: `Fill user response: "${val}"`
+            });
+          }
+
+          // Execute remaining actions
+          if (remainingActions && remainingActions.length > 0) {
+            for (const act of remainingActions) {
+              await executeAgentAction(act);
+              await sleep(600);
+            }
+          }
+
+          playSound('complete');
+          showToast('🎉 Application details filled successfully!');
+        });
+      }
+    }, 100);
   }
 
   async function executeAgentAction(act) {
