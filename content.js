@@ -301,7 +301,7 @@
 
     html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
     html = html.replace(/`([^`]+)`/g, '<code style="background:rgba(255,255,255,0.1); padding:2px 6px; border-radius:4px; font-family:monospace; font-size:11px;">$1</code>');
-    html = html.replace(/^\s*-\s+(.*)$/gbm, '• $1<br/>');
+    html = html.replace(/^\s*-\s+(.*)$/gm, '• $1<br/>');
     html = html.replace(/\n/g, '<br/>');
 
     return html;
