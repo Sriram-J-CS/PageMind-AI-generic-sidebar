@@ -4,14 +4,6 @@
 
 ---
 
-## 🔗 About & Extension Link
-
-- **Official Repository Link:** [https://github.com/Sriram-J-CS/PageMind-AI-generic-sidebar](https://github.com/Sriram-J-CS/PageMind-AI-generic-sidebar)
-- **Extension Name:** PageMind AI Generic Sidebar
-- **Extension Type:** Google Chrome Extension (Manifest V3)
-
----
-
 ## 🌟 Why PageMind?
 
 Most AI browser sidebars are just ChatGPT wrapped in an iframe. **PageMind is different.** It physically interacts with the DOM, draws 3D annotations over webpage elements, moves an interactive 3D ghost laser cursor to fill out forms, and connects to external tools via the **Model Context Protocol (MCP)**.
@@ -23,12 +15,11 @@ Most AI browser sidebars are just ChatGPT wrapped in an iframe. **PageMind is di
 ### 🥇 1. PageMind Vision — The AI That Draws on Webpages
 - **What it does:** Instead of answering in text alone, PageMind **physically annotates the webpage**.
 - **Visual Overlays:**
-  - 🔴 **Red Bounding Boxes:** Highlights loaded language, biased headlines, or errors with corner tech brackets.
-  - 🟢 **Green Boxes:** Draws green arrows and boxes around verified sources or updates.
-  - 🟡 **3D Translucent Sticky Notes:** Pin-drops notes explaining key findings right above elements.
-  - 🏷️ **Status Badges:** Shows real-time indicators next to data points.
+  - **Red Bounding Boxes:** Highlights loaded language, biased headlines, or errors with corner tech brackets.
+  - **Green Boxes:** Draws green arrows and boxes around verified sources or updates.
+  - **3D Translucent Sticky Notes:** Pin-drops notes explaining key findings right above elements.
 
-### 🥈 2. PageMind Agent — The AI That Clicks & Fills For You
+### 2. PageMind Agent — The AI That Clicks & Fills For You
 - **What it does:** Gives the AI hands to navigate webpages, fill forms, and click buttons.
 - **3D Ghost Laser Cursor:** Renders a glowing laser orb cursor with 60fps spring motion physics that glides across the screen.
 - **Automated Interaction:** Performs character-by-character form typing, click ripple effects, and smooth window scrolling.
@@ -37,10 +28,10 @@ Most AI browser sidebars are just ChatGPT wrapped in an iframe. **PageMind is di
 ### 🥉 3. PageMind MCP Router — Connected Tools Hub
 - **What it does:** Uses the Model Context Protocol (MCP) to route commands from any webpage to external tools.
 - **Integrations Supported:**
-  - 🟢 **Notion API:** Creates Notion database tasks from webpage summaries.
-  - 📅 **Calendar & .ICS:** Prepares Google Calendar links and generates downloadable `.ics` calendar files.
-  - 🐙 **GitHub API:** Logs GitHub issues for code audits or page bugs.
-  - ⚡ **Slack Webhooks:** Sends rich channel notifications instantly.
+  - **Notion API:** Creates Notion database tasks from webpage summaries.
+  - **Calendar & .ICS:** Prepares Google Calendar links and generates downloadable `.ics` calendar files.
+  - **GitHub API:** Logs GitHub issues for code audits or page bugs.
+  - **Slack Webhooks:** Sends rich channel notifications instantly.
 
 ---
 
