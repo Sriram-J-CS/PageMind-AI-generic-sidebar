@@ -1,11 +1,14 @@
-# 🔮 PageMind — 3D AI Vision + Agent + MCP Chrome Extension
+# PageMind-AI-generic-sidebar
 
 > **The 2026 AI Browser Copilot that sees, clicks, annotates, and controls your tools directly on any webpage.**
 
-[![Repository](https://img.shields.io/badge/GitHub-Sriram--J--CS%2FPageMind--AI--generic--sidebar-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Sriram-J-CS/PageMind-AI-generic-sidebar)
-![Chrome Extension Manifest V3](https://img.shields.io/badge/Chrome_Extension-Manifest_V3-6366f1?style=for-the-badge&logo=googlechrome&logoColor=white)
-![AI Trend 2026](https://img.shields.io/badge/2026_Mega--Trend-Computer_Use_Agent-ec4899?style=for-the-badge)
-![License MIT](https://img.shields.io/badge/License-MIT-10b981?style=for-the-badge)
+---
+
+## 🔗 About & Extension Link
+
+- **Official Repository Link:** [https://github.com/Sriram-J-CS/PageMind-AI-generic-sidebar](https://github.com/Sriram-J-CS/PageMind-AI-generic-sidebar)
+- **Extension Name:** PageMind AI Generic Sidebar
+- **Extension Type:** Google Chrome Extension (Manifest V3)
 
 ---
 
