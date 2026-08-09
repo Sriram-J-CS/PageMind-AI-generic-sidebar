@@ -1,7 +1,13 @@
 (function() {
   'use strict';
   
-  if (window.__pagemindLoaded) return;
+  if (window.__pagemindLoaded) {
+    // If re-injected, toggle sidebar if function exists
+    if (typeof window.__pagemindToggleSidebar === 'function') {
+      window.__pagemindToggleSidebar();
+    }
+    return;
+  }
   window.__pagemindLoaded = true;
 
   // ===== GLOBAL STATE =====
@@ -154,12 +160,22 @@
       <span class="pm-orb-badge">AI</span>
     `;
 
-    floatingOrb.addEventListener('click', () => {
+    const handleOrbClick = (e) => {
+      if (e) {
+        e.stopPropagation();
+        e.preventDefault();
+      }
       playSound('click');
       toggleSidebar();
-    });
+    };
 
-    document.body.appendChild(floatingOrb);
+    floatingOrb.addEventListener('click', handleOrbClick);
+    floatingOrb.addEventListener('pointerdown', (e) => e.stopPropagation());
+
+    const parent = document.body || document.documentElement;
+    if (parent) {
+      parent.appendChild(floatingOrb);
+    }
   }
 
   // ===== SIDEBAR CREATION =====
@@ -190,27 +206,32 @@
       </div>
     `;
     
-    document.body.appendChild(sidebar);
+    const parent = document.body || document.documentElement;
+    parent.appendChild(sidebar);
     
     chatContainer = sidebar.querySelector('.pagemind-chat');
     inputField = sidebar.querySelector('.pagemind-input');
     
-    sidebar.querySelector('.pagemind-close').addEventListener('click', () => {
+    sidebar.querySelector('.pagemind-close').addEventListener('click', (e) => {
+      e.stopPropagation();
       playSound('click');
       toggleSidebar(false);
     });
     
     sidebar.querySelectorAll('.pagemind-mode-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
         playSound('click');
         setMode(btn.dataset.mode);
       });
     });
     
-    sidebar.querySelector('.pagemind-send').addEventListener('click', () => {
+    sidebar.querySelector('.pagemind-send').addEventListener('click', (e) => {
+      e.stopPropagation();
       playSound('click');
       handleSend();
     });
+
     inputField.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         playSound('click');
@@ -230,12 +251,14 @@
     
     if (shouldOpen) {
       sidebar.classList.add('open');
-      inputField.focus();
+      if (inputField) inputField.focus();
     } else {
       sidebar.classList.remove('open');
       clearOverlays();
     }
   }
+
+  window.__pagemindToggleSidebar = toggleSidebar;
 
   function setMode(mode) {
     currentMode = mode;
@@ -390,7 +413,6 @@
   // ===== 1. CHAT MODE =====
   async function handleChat(text, context) {
     if (!apiKey) {
-      // Smart Local AI Page Analysis Engine
       removeTyping();
       const localResponse = generateLocalSmartAnalysis(text, context);
       addMessage('ai', localResponse);
@@ -701,7 +723,8 @@ Return JSON:
       cursor = document.createElement('div');
       cursor.id = 'pagemind-ghost-cursor';
       cursor.className = 'pagemind-ghost-cursor';
-      document.body.appendChild(cursor);
+      const parent = document.body || document.documentElement;
+      parent.appendChild(cursor);
     }
     return cursor;
   }
@@ -958,7 +981,8 @@ Return JSON:
       container = document.createElement('div');
       container.id = 'pagemind-overlay-container';
       container.className = 'pagemind-overlay-container';
-      document.body.appendChild(container);
+      const parent = document.body || document.documentElement;
+      parent.appendChild(container);
     }
     return container;
   }
@@ -976,7 +1000,8 @@ Return JSON:
       toast = document.createElement('div');
       toast.id = 'pagemind-toast';
       toast.className = 'pagemind-toast';
-      document.body.appendChild(toast);
+      const parent = document.body || document.documentElement;
+      parent.appendChild(toast);
     }
     toast.innerHTML = `🔮 <span>${message}</span>`;
     toast.classList.add('show');
@@ -988,6 +1013,10 @@ Return JSON:
   }
 
   // ===== AUTO INITIALIZATION =====
-  createFloatingOrb();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', createFloatingOrb);
+  } else {
+    createFloatingOrb();
+  }
 
 })();

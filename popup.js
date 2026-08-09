@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const integrationsContent = document.getElementById('integrationsContent');
   const statusEl = document.getElementById('status');
 
-  // Toggle Advanced Integrations
+  // Toggle Advanced Integrations Accordion
   toggleIntegrationsBtn.addEventListener('click', () => {
     integrationsContent.classList.toggle('show');
     const isShowing = integrationsContent.classList.contains('show');
@@ -29,31 +29,31 @@ document.addEventListener('DOMContentLoaded', () => {
     if (data.githubToken) githubTokenEl.value = data.githubToken;
     if (data.slackWebhook) slackWebhookEl.value = data.slackWebhook;
 
-    // Show advanced section if any advanced token is present
     if (data.notionToken || data.notionDbId || data.githubToken || data.slackWebhook) {
       integrationsContent.classList.add('show');
       toggleIntegrationsBtn.textContent = '⚙️ Advanced MCP Integrations (Notion, GitHub, Slack) ▴';
     }
   });
 
-  // Save Credentials
-  saveBtn.addEventListener('click', () => {
+  // Save Credentials & Auto-Activate
+  saveBtn.addEventListener('click', async () => {
     const apiKey = apiKeyEl.value.trim();
     const notionToken = notionTokenEl.value.trim();
     const notionDbId = notionDbIdEl.value.trim();
     const githubToken = githubTokenEl.value.trim();
     const slackWebhook = slackWebhookEl.value.trim();
 
-    chrome.storage.sync.set({ apiKey, notionToken, notionDbId, githubToken, slackWebhook }, () => {
-      showStatus('✅ Saved successfully! Press Alt+P on any webpage to open PageMind.', 'success');
+    chrome.storage.sync.set({ apiKey, notionToken, notionDbId, githubToken, slackWebhook }, async () => {
+      showStatus('✅ Saved successfully! Activating PageMind...', 'success');
+      await triggerSidebarOnActiveTab();
     });
   });
 
-  // Test OpenAI API Key
+  // Test OpenAI API Key (or confirm Zero-Setup mode)
   testApiKeyBtn.addEventListener('click', async () => {
     const apiKey = apiKeyEl.value.trim();
     if (!apiKey) {
-      showStatus('⚠️ Please enter an OpenAI API Key to test.', 'error');
+      showStatus('✨ Zero-Setup Active! PageMind works out-of-the-box without an API key.', 'success');
       return;
     }
 
@@ -79,19 +79,51 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Open Sidebar on Current Tab
+  // Open Sidebar Button Click
   openSidebarBtn.addEventListener('click', async () => {
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    if (tab && tab.id) {
-      chrome.tabs.sendMessage(tab.id, { action: 'toggle_sidebar' }, (response) => {
+    await triggerSidebarOnActiveTab();
+  });
+
+  // Helper function to safely inject scripts and toggle sidebar on active tab
+  async function triggerSidebarOnActiveTab() {
+    try {
+      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      if (!tab || !tab.id) {
+        showStatus('⚠️ Please select an active webpage tab.', 'error');
+        return;
+      }
+
+      // Check if URL is restrictable by Chrome (chrome:// or edge://)
+      if (tab.url && (tab.url.startsWith('chrome://') || tab.url.startsWith('edge://') || tab.url.startsWith('chrome-extension://') || tab.url.startsWith('about:'))) {
+        showStatus('⚠️ Cannot run on browser internal system pages. Open a normal website!', 'error');
+        return;
+      }
+
+      // Inject content.js and styles.css programmatically if not already loaded
+      try {
+        await chrome.scripting.insertCSS({ target: { tabId: tab.id }, files: ['styles.css'] });
+        await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ['content.js'] });
+      } catch (e) {
+        // Already injected or standard injection
+      }
+
+      // Send message to toggle sidebar
+      chrome.tabs.sendMessage(tab.id, { action: 'toggle_sidebar' }, (res) => {
         if (chrome.runtime.lastError) {
-          showStatus('⚠️ Please refresh the target webpage to inject PageMind.', 'error');
+          // Retry sending message after brief pause
+          setTimeout(() => {
+            chrome.tabs.sendMessage(tab.id, { action: 'toggle_sidebar' }, () => {
+              window.close();
+            });
+          }, 200);
         } else {
           window.close();
         }
       });
+    } catch (err) {
+      showStatus(`⚠️ Error: ${err.message}`, 'error');
     }
-  });
+  }
 
   function showStatus(msg, type) {
     statusEl.textContent = msg;
