@@ -2,6 +2,7 @@
 
 > **The 2026 AI Browser Copilot that sees, clicks, annotates, and controls your tools directly on any webpage.**
 
+[![Repository](https://img.shields.io/badge/GitHub-Sriram--J--CS%2FPageMind--AI--generic--sidebar-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Sriram-J-CS/PageMind-AI-generic-sidebar)
 ![Chrome Extension Manifest V3](https://img.shields.io/badge/Chrome_Extension-Manifest_V3-6366f1?style=for-the-badge&logo=googlechrome&logoColor=white)
 ![AI Trend 2026](https://img.shields.io/badge/2026_Mega--Trend-Computer_Use_Agent-ec4899?style=for-the-badge)
 ![License MIT](https://img.shields.io/badge/License-MIT-10b981?style=for-the-badge)
@@ -44,17 +45,17 @@ Most AI browser sidebars are just ChatGPT wrapped in an iframe. **PageMind is di
 
 Anyone can clone and install PageMind in Chrome in **under 60 seconds**:
 
-### 1. Download or Clone the Repository
+### Step 1: Download or Clone the Repository
 ```bash
-git clone https://github.com/YOUR-USERNAME/pagemind.git
+git clone https://github.com/Sriram-J-CS/PageMind-AI-generic-sidebar.git
 ```
 *(Or click **Code ➔ Download ZIP** on GitHub and extract it).*
 
-### 2. Load into Google Chrome
+### Step 2: Load into Google Chrome
 1. Open Google Chrome and go to `chrome://extensions`.
 2. Enable **Developer mode** using the toggle switch in the top-right corner.
 3. Click **Load unpacked** (top-left button).
-4. Select the `pagemind` folder you downloaded.
+4. Select the `PageMind-AI-generic-sidebar` folder you downloaded.
 
 ---
 
@@ -85,7 +86,7 @@ git clone https://github.com/YOUR-USERNAME/pagemind.git
 ## 📁 Repository Structure
 
 ```
-pagemind/
+PageMind-AI-generic-sidebar/
 ├── manifest.json       # Chrome Extension Manifest V3
 ├── popup.html          # 3D Glassmorphic Settings Control Center
 ├── popup.js            # Settings sync & OpenAI connectivity test logic
