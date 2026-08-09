@@ -122,16 +122,8 @@ document.addEventListener('DOMContentLoaded', () => {
         ? { action: 'toggle_sidebar' } 
         : { action: 'trigger_mode', mode: mode };
 
-      chrome.tabs.sendMessage(tab.id, actionPayload, (res) => {
-        if (chrome.runtime.lastError) {
-          setTimeout(() => {
-            chrome.tabs.sendMessage(tab.id, actionPayload, () => {
-              window.close();
-            });
-          }, 150);
-        } else {
-          window.close();
-        }
+      chrome.tabs.sendMessage(tab.id, actionPayload, () => {
+        setTimeout(() => window.close(), 100);
       });
     } catch (err) {
       showStatus(`⚠️ Error: ${err.message}`, 'error');

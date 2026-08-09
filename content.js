@@ -2,7 +2,6 @@
   'use strict';
   
   if (window.__pagemindLoaded) {
-    // If re-injected, toggle sidebar if function exists
     if (typeof window.__pagemindToggleSidebar === 'function') {
       window.__pagemindToggleSidebar();
     }
@@ -113,16 +112,24 @@
     } else if (request.action === 'trigger_mode') {
       setMode(request.mode);
       toggleSidebar(true);
-      if (request.selection && inputField) {
-        inputField.value = `Analyze selection: "${request.selection}"`;
+      
+      const queryText = request.selection 
+        ? `Analyze selection: "${request.selection}"` 
+        : (request.mode === 'vision' ? 'Find key statements and annotate' : (request.mode === 'agent' ? 'Fill inputs and interact' : 'Route Notion & Calendar task'));
+      
+      if (inputField) inputField.value = queryText;
+      
+      // Instantly execute mode action on page DOM!
+      setTimeout(() => {
         handleSend();
-      }
+      }, 200);
+
       sendResponse({ status: 'ok' });
     }
     return true;
   });
 
-  // ===== KEYBOARD SHORTCUTS =====
+  // ===== KEYBOARD SHORTCUTS (Alt+P, Alt+V, Alt+A) =====
   document.addEventListener('keydown', (e) => {
     const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
     if (activeTag === 'input' || activeTag === 'textarea' || document.activeElement.isContentEditable) {
@@ -139,12 +146,16 @@
       playSound('click');
       setMode('vision');
       toggleSidebar(true);
+      if (inputField) inputField.value = 'Annotate key page elements';
+      setTimeout(() => handleSend(), 200);
     }
     if (e.altKey && (e.key === 'a' || e.key === 'A')) {
       e.preventDefault();
       playSound('click');
       setMode('agent');
       toggleSidebar(true);
+      if (inputField) inputField.value = 'Auto-interact with webpage fields';
+      setTimeout(() => handleSend(), 200);
     }
   });
 
